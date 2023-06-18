@@ -1,62 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import Tabs from "./src/components/Tabs";
-import * as Location from "expo-location";
+import { useGetWeather } from "./src/hooks/useGetWeather";
+import ErrorItem from "./src/components/ErrorItem";
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [location, setLocation] = useState(null);
-  
-  if (loading) {
+  const [loading, error, weather] = useGetWeather();
+
+  if (weather && weather.list && !loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size={"large"} color={"blue"} />
-      </View>
+      <NavigationContainer>
+        <Tabs weather={weather} />
+      </NavigationContainer>
     );
   }
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setError("Permission to access location was denied");
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      // setLon(location);
-    })();
-  }, []);
-  
-  if (location) {
-    console.log(location)
-  }
-  // const fetchWeatherData = async () => {
-  //   try {
-  //     const res = await fetch(
-  //       `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}`
-  //     );
-  //     const data = await res.json();
-  //     setWeather(data);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     setError("Could not fetch weather");
-  //     setLoading(false);
-  //   }
-  // }
+
   return (
-    <NavigationContainer>
-      <Tabs />
-    </NavigationContainer>
+    <View style={styles.container}>
+      {error ? (
+        <ErrorItem />
+      ) : (
+        <ActivityIndicator size={"large"} color={"blue"} />
+      )}
+    </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

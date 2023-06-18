@@ -4,11 +4,10 @@ import UpcomingWeather from "../screens/UpcomingWeather";
 import City from "../screens/City";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
-import { setStatusBarBackgroundColor } from "expo-status-bar";
 
 const Tab = createBottomTabNavigator();
 
-const Tabs = () => {
+const Tabs = (weather) => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -19,7 +18,6 @@ const Tabs = () => {
         },
         headerStyle: {
           backgroundColor: "skyblue",
-          
         },
         headerTitleStyle: {
           fontWeight: "bold",
@@ -28,12 +26,10 @@ const Tabs = () => {
         },
 
         headerTitleAlign: "center",
-        
       }}
     >
       <Tab.Screen
         name="Current"
-        component={CurrentWeather}
         options={{
           tabBarIcon: ({ focused }) => (
             <Feather
@@ -43,10 +39,11 @@ const Tabs = () => {
             />
           ),
         }}
-      />
+      >
+        {() => <CurrentWeather weatherData={weather.weather.list[0]} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Upcoming"
-        component={UpcomingWeather}
         options={{
           tabBarIcon: ({ focused }) => (
             <Feather
@@ -56,10 +53,11 @@ const Tabs = () => {
             />
           ),
         }}
-      />
+      >
+        {() => <UpcomingWeather weatherData={weather.weather.list} />}
+      </Tab.Screen>
       <Tab.Screen
         name="City"
-        component={City}
         options={{
           tabBarIcon: ({ focused }) => (
             <Feather
@@ -69,7 +67,9 @@ const Tabs = () => {
             />
           ),
         }}
-      />
+      >
+        {() => <City weatherData={weather.weather.city} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };
